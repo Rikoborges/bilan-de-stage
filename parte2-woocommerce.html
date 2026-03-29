@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partie 2 — WooCommerce</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600&family=Outfit:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--orange:#FF6B35;--dark:#0f0f1a;--border:rgba(255,255,255,0.08);--green:#22c55e;--purple:#9333ea;--muted:#94a3b8}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Outfit',sans-serif;background:var(--dark);color:#e2e8f0;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+
+.header{display:flex;align-items:center;justify-content:space-between;padding:12px 32px;border-bottom:1px solid var(--border);background:rgba(15,15,26,.95);flex-shrink:0}
+.brand{display:flex;align-items:center;gap:10px}
+.home-btn{display:flex;align-items:center;gap:6px;font-size:12px;color:#475569;text-decoration:none;padding:5px 12px;border:1px solid rgba(255,255,255,.08);border-radius:8px;transition:all .2s;font-family:'Outfit',sans-serif}
+.home-btn:hover{color:var(--orange);border-color:rgba(255,107,53,.3);background:rgba(255,107,53,.05)}
+.brand-sep{width:1px;height:16px;background:rgba(255,255,255,.08)}
+.brand-name{font-family:'Bricolage Grotesque',sans-serif;font-size:12px;font-weight:500;color:#334155}
+.brand-part{font-size:12px;color:#475569}
+.hdr-right{display:flex;align-items:center;gap:12px}
+.tag{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;transition:all .3s}
+.t-woo{background:rgba(147,51,234,.15);color:#d8b4fe;border:1px solid rgba(147,51,234,.2)}
+.t-php{background:rgba(167,139,250,.15);color:#c4b5fd;border:1px solid rgba(167,139,250,.2)}
+.t-wp{background:rgba(99,102,241,.15);color:#a5b4fc;border:1px solid rgba(99,102,241,.2)}
+.t-api{background:rgba(255,107,53,.15);color:#fdba74;border:1px solid rgba(255,107,53,.2)}
+.t-sc{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.2)}
+.t-intro{background:rgba(148,163,184,.1);color:#94a3b8;border:1px solid rgba(148,163,184,.15)}
+.counter{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+
+.progress{height:2px;background:rgba(255,255,255,.05);flex-shrink:0}
+.progress-bar{height:2px;background:linear-gradient(90deg,#9333ea,#c084fc);transition:width .4s ease}
+
+.main{flex:1;overflow-y:auto;padding:32px 48px}
+.slide{display:none;animation:si .3s ease;max-width:820px;margin:0 auto}
+.slide.active{display:block}
+@keyframes si{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+h2{font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:600;color:#f8fafc;line-height:1.2;margin-bottom:6px}
+.sub{font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.explain{font-size:14px;color:#94a3b8;line-height:1.8;margin-bottom:12px;padding:12px 16px;background:rgba(255,255,255,.02);border-radius:8px;border-left:2px solid #1e293b}
+.explain strong{color:#cbd5e1;font-weight:500}
+.explain code{font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(255,255,255,.07);padding:1px 6px;border-radius:4px;color:var(--orange)}
+
+.box{border-radius:10px;padding:14px 18px;margin-bottom:12px}
+.box p{font-size:13.5px;color:#94a3b8;line-height:1.75}
+.box strong{color:#e2e8f0;font-weight:500}
+.box code{font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(255,255,255,.07);padding:1px 6px;border-radius:4px;color:var(--orange)}
+.box-o{background:rgba(255,107,53,.06);border-left:3px solid var(--orange)}
+.box-g{background:rgba(255,255,255,.03);border-left:3px solid #334155}
+.box-gr{background:rgba(34,197,94,.05);border-left:3px solid var(--green)}
+.box-pu{background:rgba(147,51,234,.06);border-left:3px solid var(--purple)}
+
+.cw{margin-bottom:12px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.07)}
+.ct{background:#0d0d1a;padding:9px 16px;display:flex;align-items:center;gap:10px}
+.dots{display:flex;gap:5px}
+.dots i{width:10px;height:10px;border-radius:50%;display:block}
+.d1{background:#ef4444}.d2{background:#f59e0b}.d3{background:#22c55e}
+.fn-name{font-family:'JetBrains Mono',monospace;font-size:11px;color:#475569}
+.cb{background:#0f172a;padding:16px 20px;overflow-x:auto}
+pre{font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.85;color:#e2e8f0;white-space:pre}
+.kw{color:#c084fc}.fn{color:#60a5fa}.str{color:#86efac}.cm{color:#374151;font-style:italic}.var{color:#fbbf24}.th{color:#f87171}.num{color:#fb923c}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:13px 15px}
+.card h4{font-size:13px;font-weight:500;color:#e2e8f0;margin-bottom:5px}
+.card p{font-size:12px;color:#64748b;line-height:1.6}
+.card .acc{color:var(--orange);font-size:11px;font-family:'JetBrains Mono',monospace;margin-top:5px;display:block}
+
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.sk{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:8px}
+.sd{width:6px;height:6px;border-radius:50%;background:#9333ea;flex-shrink:0}
+.sk span{font-size:13px;color:#cbd5e1}
+
+.badge{display:inline-flex;align-items:center;gap:7px;background:rgba(147,51,234,.12);border:1px solid rgba(147,51,234,.2);border-radius:20px;padding:5px 14px;font-size:12px;color:#d8b4fe;margin-bottom:18px}
+.bdot{width:5px;height:5px;border-radius:50%;background:#9333ea;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero-title{font-family:'Bricolage Grotesque',sans-serif;font-size:38px;font-weight:600;color:#f8fafc;line-height:1.1;margin-bottom:10px}
+.hero-title span{color:#c084fc}
+.hero-meta{font-size:13px;color:#475569;margin-bottom:24px}
+.plan-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+.pi{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:13px;text-align:center}
+.pi-n{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:600;color:#c084fc;line-height:1;margin-bottom:3px}
+.pi-t{font-size:11px;color:#64748b}
+
+.footer{display:flex;align-items:center;justify-content:space-between;padding:12px 32px;border-top:1px solid var(--border);background:rgba(15,15,26,.95);flex-shrink:0}
+.fdots{display:flex;gap:5px;flex-wrap:wrap;max-width:240px}
+.fdot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.1);cursor:pointer;transition:all .2s}
+.fdot.active{background:#9333ea;width:16px;border-radius:3px}
+.nbtns{display:flex;gap:8px}
+.nb{background:transparent;border:1px solid rgba(255,255,255,.1);color:#94a3b8;padding:7px 16px;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s}
+.nb:hover{background:rgba(255,255,255,.05);color:#e2e8f0}
+.nb:disabled{opacity:.25;cursor:default}
+.nb.pr{background:#9333ea;border-color:#9333ea;color:#fff}
+.nb.pr:hover{opacity:.88}
+.key-hint{font-size:11px;color:#334155;display:flex;align-items:center;gap:5px}
+.key{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:2px 6px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#64748b}
+
+.btt{position:fixed;bottom:76px;right:24px;width:38px;height:38px;border-radius:50%;background:rgba(15,15,26,.95);border:1px solid rgba(255,255,255,.12);color:#94a3b8;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s,transform .2s,color .2s;z-index:100}
+.btt.visible{opacity:1;pointer-events:all}
+.btt:hover{color:#c084fc;border-color:rgba(147,51,234,.4);transform:translateY(-2px)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand">
+    <a class="home-btn" href="index.html">← Início</a>
+    <div class="brand-sep"></div>
+    <span class="brand-name">Ricardo Borges · 6tematik.fr</span>
+    <span class="brand-part">· Partie 2 / 2</span>
+  </div>
+  <div class="hdr-right">
+    <span class="tag t-woo" id="cur-tag">WooCommerce</span>
+    <span class="counter" id="counter">01 / 08</span>
+  </div>
+</div>
+<div class="progress"><div class="progress-bar" id="prog" style="width:12.5%"></div></div>
+
+<div class="main">
+
+<!-- W0 Intro -->
+<div class="slide active" data-tag="Intro WooCommerce" data-class="t-woo">
+  <div class="badge"><span class="bdot"></span>Partie 2 · WooCommerce</div>
+  <div class="hero-title">WooCommerce<br><span>Extension e-commerce</span></div>
+  <p class="hero-meta">Ricardo Borges · Développeur web junior · 6tematik.fr</p>
+  <div class="plan-grid">
+    <div class="pi"><div class="pi-n">3</div><div class="pi-t">Produits créés</div></div>
+    <div class="pi"><div class="pi-n">2</div><div class="pi-t">Shortcodes WC</div></div>
+    <div class="pi"><div class="pi-n">4</div><div class="pi-t">Hooks utilisés</div></div>
+    <div class="pi"><div class="pi-n">1</div><div class="pi-t">API REST testée</div></div>
+  </div>
+  <div class="box box-g"><p><strong>Plan :</strong> C'est quoi WooCommerce → Produits simples et variables → Structure technique (base de données) → Hooks add_action / add_filter → Lire WC_Product en PHP → Shortcode produits → API REST WooCommerce → Bilan</p></div>
+</div>
+
+<!-- W1 C'est quoi WooCommerce -->
+<div class="slide" data-tag="WooCommerce" data-class="t-woo">
+  <h2>C'est quoi WooCommerce ?</h2>
+  <p class="sub">WooCommerce est un plugin WordPress qui transforme un site normal en boutique en ligne.</p>
+  <p class="explain">WordPress tout seul gère les contenus — articles, pages, médias. <strong>WooCommerce</strong> ajoute par-dessus une couche e-commerce complète : produits, panier, commandes, paiements, livraisons. Techniquement, WooCommerce utilise les mécanismes natifs de WordPress — les <strong>Custom Post Types</strong> — pour stocker les produits comme des "posts" spéciaux dans la base de données.</p>
+  <p class="explain">La différence clé avec un site classique : un client peut <strong>ajouter au panier</strong>, <strong>passer une commande</strong> et <strong>payer en ligne</strong>. WooCommerce gère toute la logique de transaction.</p>
+  <div class="g2">
+    <div class="card"><h4>WordPress seul</h4><p>Pages, articles, médias. Contenu statique ou dynamique. Pas de transaction commerciale.</p><span class="acc">→ site vitrine</span></div>
+    <div class="card"><h4>WordPress + WooCommerce</h4><p>Tout WordPress + produits, panier, commandes, paiements, stock, livraisons.</p><span class="acc">→ boutique en ligne</span></div>
+  </div>
+  <div class="box box-pu"><p><strong>Pages créées automatiquement :</strong> Boutique, Panier, Commander, Mon compte. WooCommerce les crée lors de l'installation. Ne jamais les supprimer — WooCommerce en a besoin pour fonctionner.</p></div>
+</div>
+
+<!-- W2 Produits -->
+<div class="slide" data-tag="Produits WooCommerce" data-class="t-woo">
+  <h2>Produits simples et variables</h2>
+  <p class="sub">Les deux types de produits les plus courants dans une boutique.</p>
+  <p class="explain">Un <strong>produit simple</strong> est le cas de base — un seul article avec un prix fixe. Un <strong>produit variable</strong> a des variations : tailles, couleurs, capacités... Chaque variation peut avoir un prix différent. On définit d'abord des <strong>attributs</strong> (ex: Taille), puis des <strong>variations</strong> (S, M, L) avec chacune son prix et son stock.</p>
+  <p class="explain">Le <strong>SKU</strong> (Stock Keeping Unit) est une référence unique pour identifier un produit dans le stock — utile pour la gestion d'inventaire et l'intégration avec des systèmes externes (ERP, logistique...).</p>
+  <div class="g2">
+    <div class="card"><h4>Produit simple</h4><p>Un seul prix, un seul stock. Ex : un livre, une bougie, un service à prix fixe.</p><span class="acc">type: simple</span></div>
+    <div class="card"><h4>Produit variable</h4><p>Attributs + variations avec prix différents. Ex : T-shirt S/M/L, chaque taille a son prix.</p><span class="acc">type: variable</span></div>
+  </div>
+  <div class="cw">
+    <div class="ct"><div class="dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div><span class="fn-name">Exemple — produit variable T-shirt</span></div>
+    <div class="cb"><pre><span class="cm">Attribut :   Taille</span>
+<span class="cm">Valeurs :    S | M | L</span>
+
+<span class="cm">Variations :</span>
+<span class="cm">  Taille S  →  prix : 15,00€  |  stock : 10  |  SKU : TS-S-001</span>
+<span class="cm">  Taille M  →  prix : 15,00€  |  stock : 8   |  SKU : TS-M-001</span>
+<span class="cm">  Taille L  →  prix : 17,00€  |  stock : 3   |  SKU : TS-L-001</span>
+
+<span class="cm">// Le client choisit sa taille → prix et stock mis à jour</span></pre></div>
+  </div>
+  <div class="box box-pu"><p><strong>Description courte vs longue :</strong> la courte s'affiche à côté du prix (résumé rapide). La longue s'affiche dans un onglet en bas de la page produit (détails complets).</p></div>
+</div>
+
+<!-- W3 Structure technique -->
+<div class="slide" data-tag="Structure technique" data-class="t-wp">
+  <h2>Structure technique WooCommerce</h2>
+  <p class="sub">Comment WordPress stocke les produits en base de données.</p>
+  <p class="explain">Dans WordPress, tout est un <strong>"post"</strong>. Les articles sont des posts de type <code>post</code>. Les pages sont de type <code>page</code>. WooCommerce crée un Custom Post Type appelé <code>product</code>. Un produit est stocké dans la table <code>wp_posts</code> avec le type <code>product</code>, et ses données spécifiques (prix, stock, SKU) sont stockées dans <code>wp_postmeta</code> sous forme de métadonnées.</p>
+  <p class="explain">Les catégories de produits sont des <strong>taxonomies personnalisées</strong> (<code>product_cat</code>), comme les catégories d'articles WordPress — le même système, juste avec un nom différent.</p>
+  <div class="cw">
+    <div class="ct"><div class="dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div><span class="fn-name">base de données — tables impliquées</span></div>
+    <div class="cb"><pre><span class="cm">── wp_posts ──────────────────────────────────────────────</span>
+  ID: 42  |  post_type: <span class="str">'product'</span>  |  post_title: <span class="str">'T-shirt blanc'</span>
+  post_status: <span class="str">'publish'</span>  |  post_author: 1
+
+<span class="cm">── wp_postmeta (métadonnées du produit) ──────────────────</span>
+  post_id: 42  |  meta_key: <span class="str">'_price'</span>      |  meta_value: <span class="str">'15.00'</span>
+  post_id: 42  |  meta_key: <span class="str">'_stock'</span>      |  meta_value: <span class="str">'10'</span>
+  post_id: 42  |  meta_key: <span class="str">'_sku'</span>        |  meta_value: <span class="str">'TS-001'</span>
+  post_id: 42  |  meta_key: <span class="str">'_sale_price'</span> |  meta_value: <span class="str">'12.00'</span>
+
+<span class="cm">// wc_get_product(42) assemble tout ça en un objet WC_Product</span></pre></div>
+  </div>
+  <div class="box box-gr"><p><strong>Pourquoi c'est utile de savoir ça :</strong> quand on cherche un bug ou qu'on veut faire une requête personnalisée, savoir où les données sont stockées évite des heures de recherche.</p></div>
+</div>
+
+<!-- W4 Hooks -->
+<div class="slide" data-tag="Hooks WooCommerce" data-class="t-wp">
+  <h2>Hooks — add_action et add_filter</h2>
+  <p class="sub">Personnaliser WooCommerce depuis un plugin, sans jamais modifier les fichiers du thème.</p>
+  <p class="explain">WooCommerce (comme WordPress) fournit des centaines de <strong>points d'accroche</strong> (hooks) dans son code. À chaque moment du chargement d'une page, WooCommerce appelle ces hooks. On peut "accrocher" nos propres fonctions pour modifier le comportement sans toucher au code source. Si on modifie directement les fichiers du thème, une mise à jour efface tout. <strong>Les hooks dans un plugin survivent à toutes les mises à jour.</strong></p>
+  <p class="explain"><code>add_action</code> = on <strong>ajoute</strong> du contenu à un moment précis du rendu. <code>add_filter</code> = on <strong>intercepte</strong> une valeur et on la modifie avant qu'elle soit affichée.</p>
+  <div class="cw">
+    <div class="ct"><div class="dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div><span class="fn-name">hooks-woocommerce.php</span></div>
+    <div class="cb"><pre><span class="cm">// ── add_action : ajouter du contenu ─────────────────────
+// Ajouter un message juste sous le titre de la page produit</span>
+<span class="fn">add_action</span>(
+    <span class="str">'woocommerce_single_product_summary'</span>,  <span class="cm">// où (nom du hook WC)</span>
+    <span class="kw">function</span>() {
+        <span class="kw">echo</span> <span class="str">'&lt;p class="livraison"&gt;🚚 Livraison gratuite dès 50€&lt;/p&gt;'</span>;
+    },
+    <span class="num">6</span>  <span class="cm">// priorité : 5 = titre, 10 = prix — on s'insère à 6</span>
+);
+
+<span class="cm">// ── add_filter : modifier une valeur ─────────────────────
+// Ajouter "TTC" après chaque prix affiché par WooCommerce</span>
+<span class="fn">add_filter</span>(
+    <span class="str">'woocommerce_get_price_html'</span>,   <span class="cm">// quelle valeur intercepter</span>
+    <span class="kw">function</span>( <span class="var">$price</span>, <span class="var">$product</span> ) {
+        <span class="kw">return</span> <span class="var">$price</span> . <span class="str">' &lt;small&gt;TTC&lt;/small&gt;'</span>;
+    },
+    <span class="num">10</span>, <span class="num">2</span>  <span class="cm">// priorité 10, reçoit 2 arguments</span>
+);</pre></div>
+  </div>
+  <div class="box box-pu"><p><strong>Comment trouver les hooks WC :</strong> chercher <code>do_action(</code> ou <code>apply_filters(</code> dans les fichiers source de WooCommerce, ou consulter la référence officielle sur <code>woocommerce.github.io/code-reference</code>.</p></div>
+</div>
+
+<!-- W5 WC_Product + shortcode -->
+<div class="slide" data-tag="WC_Product + Shortcode" data-class="t-php">
+  <h2>Lire WC_Product et créer un shortcode</h2>
+  <p class="sub">Accéder aux données d'un produit WooCommerce depuis un plugin PHP.</p>
+  <p class="explain"><code>WC_Product</code> est une <strong>classe PHP</strong> — un objet qui représente un produit avec toutes ses données. <code>wc_get_product()</code> crée cet objet à partir de l'ID du produit. On appelle ensuite ses <strong>méthodes</strong> pour lire les données : <code>get_name()</code>, <code>get_price()</code>, <code>get_permalink()</code>...</p>
+  <p class="explain"><code>wc_get_products()</code> retourne un <strong>tableau</strong> de plusieurs objets WC_Product selon des critères (limite, date, catégorie...). On boucle avec <code>foreach</code> pour traiter chaque produit. C'est la solution qu'on a utilisée au stage pour contourner le problème CORS — plus besoin d'appel HTTP externe.</p>
+  <div class="cw">
+    <div class="ct"><div class="dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div><span class="fn-name">shortcode-produits-recents.php</span></div>
+    <div class="cb"><pre><span class="kw">function</span> <span class="fn">produits_recents</span>() {
+
+    <span class="cm">// Récupérer les 3 derniers produits publiés</span>
+    <span class="cm">// Pas de requête HTTP — on appelle directement WooCommerce</span>
+    <span class="var">$produits</span> = <span class="fn">wc_get_products</span>([
+        <span class="str">'limit'</span>   => <span class="num">3</span>,
+        <span class="str">'orderby'</span> => <span class="str">'date'</span>,
+        <span class="str">'order'</span>   => <span class="str">'DESC'</span>,
+        <span class="str">'status'</span>  => <span class="str">'publish'</span>,
+    ]);
+
+    <span class="var">$html</span> = <span class="str">'&lt;ul class="produits-recents"&gt;'</span>;
+
+    <span class="cm">// Boucler sur chaque objet WC_Product</span>
+    <span class="kw">foreach</span> ( <span class="var">$produits</span> <span class="kw">as</span> <span class="var">$p</span> ) {
+        <span class="var">$html</span> .= <span class="str">'&lt;li&gt;'</span>
+               . <span class="str">'&lt;a href="'</span> . <span class="var">$p</span>-><span class="fn">get_permalink</span>() . <span class="str">'"&gt;'</span>
+               . <span class="var">$p</span>-><span class="fn">get_name</span>()        <span class="cm">// nom du produit</span>
+               . <span class="str">' — '</span>
+               . <span class="var">$p</span>-><span class="fn">get_price_html</span>()  <span class="cm">// prix formaté avec €</span>
+               . <span class="str">'&lt;/a&gt;&lt;/li&gt;'</span>;
+    }
+
+    <span class="kw">return</span> <span class="var">$html</span> . <span class="str">'&lt;/ul&gt;'</span>;
+}
+
+<span class="cm">// Utilisation dans une page WP : [produits_recents]</span>
+<span class="fn">add_shortcode</span>( <span class="str">'produits_recents'</span>, <span class="str">'produits_recents'</span> );</pre></div>
+  </div>
+</div>
+
+<!-- W6 API REST WooCommerce -->
+<div class="slide" data-tag="API REST WooCommerce" data-class="t-api">
+  <h2>API REST WooCommerce</h2>
+  <p class="sub">WooCommerce expose ses données via une API REST — comme n'importe quelle API externe.</p>
+  <p class="explain">En plus des fonctions PHP, WooCommerce fournit une <strong>API REST complète</strong>. On peut accéder aux produits, commandes et clients via des URLs HTTP — exactement comme on l'a fait avec l'API Chuck Norris en Partie 1. C'est utile pour connecter la boutique à une application mobile, un autre site, ou un outil tiers.</p>
+  <p class="explain">C'est là que le <strong>problème CORS s'est posé au stage</strong> — en essayant d'appeler <code>/wp-json/wc/v3/products</code> avec <code>fetch()</code> depuis LocalWP. La solution qu'on a trouvée : utiliser <code>wc_get_products()</code> directement en PHP — on contourne entièrement le problème.</p>
+  <div class="cw">
+    <div class="ct"><div class="dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div><span class="fn-name">Endpoints disponibles</span></div>
+    <div class="cb"><pre><span class="cm">// Liste de tous les produits</span>
+GET https://monsite.com/wp-json/wc/v3/products
+
+<span class="cm">// Un produit spécifique par son ID</span>
+GET https://monsite.com/wp-json/wc/v3/products/42
+
+<span class="cm">// Les commandes (authentification obligatoire)</span>
+GET https://monsite.com/wp-json/wc/v3/orders
+
+<span class="cm">// Réponse JSON exemple — même format qu'une API externe :</span>
+[
+  { <span class="str">"id"</span>: <span class="num">42</span>, <span class="str">"name"</span>: <span class="str">"T-shirt blanc"</span>, <span class="str">"price"</span>: <span class="str">"15"</span>,
+    <span class="str">"permalink"</span>: <span class="str">"https://monsite.com/produit/t-shirt-blanc"</span>,
+    <span class="str">"stock_quantity"</span>: <span class="num">10</span>, <span class="str">"sku"</span>: <span class="str">"TS-001"</span> }
+]</pre></div>
+  </div>
+  <div class="box box-o"><p><strong>Pour les données sensibles :</strong> générer des Consumer Key / Consumer Secret dans <code>WooCommerce → Réglages → Avancé → API REST</code> et les envoyer dans les headers de la requête. Ne jamais les mettre dans le code front-end.</p></div>
+</div>
+
+<!-- W7 Bilan -->
+<div class="slide" data-tag="Bilan WooCommerce" data-class="t-sc">
+  <h2>Bilan — Partie 2 · WooCommerce</h2>
+  <p class="sub">Ce que je sais faire avec WooCommerce après le stage.</p>
+  <div class="sg">
+    <div class="sk"><div class="sd"></div><span>Installer et configurer WooCommerce</span></div>
+    <div class="sk"><div class="sd"></div><span>Créer produits simples et variables</span></div>
+    <div class="sk"><div class="sd"></div><span>Gérer attributs, variations, stock, SKU</span></div>
+    <div class="sk"><div class="sd"></div><span>Simuler un achat complet</span></div>
+    <div class="sk"><div class="sd"></div><span>Comprendre la structure base de données</span></div>
+    <div class="sk"><div class="sd"></div><span>Utiliser add_action() et add_filter()</span></div>
+    <div class="sk"><div class="sd"></div><span>Lire WC_Product et ses méthodes</span></div>
+    <div class="sk"><div class="sd"></div><span>Créer shortcode [produits_recents]</span></div>
+    <div class="sk"><div class="sd"></div><span>Tester l'API REST WooCommerce</span></div>
+    <div class="sk"><div class="sd"></div><span>Résoudre le problème CORS LocalWP</span></div>
+  </div>
+  <div class="box box-pu"><p><strong>Ce qu'on peut livrer avec ça :</strong> une boutique WooCommerce complète avec personnalisations via hooks, shortcodes de produits dynamiques, et intégration de données WooCommerce dans d'autres outils via l'API REST.</p></div>
+  <div class="box box-g"><p><a href="index.html" style="color:var(--orange);text-decoration:none;font-weight:500">← Retour à la page principale</a> &nbsp;·&nbsp; <a href="parte1-wp-php-api.html" style="color:#a5b4fc;text-decoration:none">Revoir Partie 1</a></p></div>
+  <div style="margin-top:8px;font-size:12px;color:#334155">rikodevstudio.com · rikodevstudio@gmail.com</div>
+</div>
+
+</div><!-- main -->
+
+<div class="footer">
+  <div class="key-hint"><span class="key">←</span><span class="key">→</span> naviguer</div>
+  <div class="fdots" id="fdots"></div>
+  <div class="nbtns">
+    <button class="nb" id="bp" onclick="go(-1)" disabled>← Précédent</button>
+    <button class="nb pr" id="bn" onclick="go(1)">Suivant →</button>
+  </div>
+</div>
+
+<button class="btt" id="btt" onclick="scrollTop()">↑</button>
+
+<script>
+const slides=document.querySelectorAll('.slide');
+const total=slides.length;
+const fdots=document.getElementById('fdots');
+let cur=0;
+
+for(let i=0;i<total;i++){
+  const d=document.createElement('div');
+  d.className='fdot'+(i===0?' active':'');
+  d.onclick=()=>goTo(i);
+  fdots.appendChild(d);
+}
+
+function goTo(n){
+  slides[cur].classList.remove('active');
+  fdots.children[cur].classList.remove('active');
+  cur=n;
+  slides[cur].classList.add('active');
+  fdots.children[cur].classList.add('active');
+  document.getElementById('bp').disabled=cur===0;
+  const bn=document.getElementById('bn');
+  bn.textContent=cur===total-1?'✓ Fim':'Suivant →';
+  bn.disabled=cur===total-1;
+  document.getElementById('counter').textContent=String(cur+1).padStart(2,'0')+' / '+String(total).padStart(2,'0');
+  document.getElementById('prog').style.width=((cur+1)/total*100)+'%';
+  const s=slides[cur];
+  document.getElementById('cur-tag').textContent=s.dataset.tag;
+  document.getElementById('cur-tag').className='tag '+s.dataset.class;
+  document.querySelector('.main').scrollTo({top:0,behavior:'smooth'});
+}
+
+function go(d){if(cur+d>=0&&cur+d<total)goTo(cur+d);}
+
+document.querySelector('.main').addEventListener('scroll',function(){
+  document.getElementById('btt').classList.toggle('visible',this.scrollTop>120);
+});
+
+function scrollTop(){document.querySelector('.main').scrollTo({top:0,behavior:'smooth'});}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);
+});
+</script>
+</body>
+</html>
